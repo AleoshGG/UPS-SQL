@@ -1,37 +1,44 @@
-# Importamos las dependencias
-from flask_sqlalchemy import SQLAlchemy
+from src.models.address import Address
 from flask_bcrypt import Bcrypt
-from dotenv import load_dotenv
-from src.models.dataTypes import AccessCredentials, Address
+from . import db
 import os
-db = SQLAlchemy()
+from dotenv import load_dotenv
 bcrypt = Bcrypt()
-load_dotenv()  
+load_dotenv()
 
-# Definición de la clase donatarios
 class Donee(db.Model):
 
     schema_name = os.getenv("SCHEMA")
-    __tablename__ = 'donees'
-    __table_args__ = {'schema': schema_name}
+    __tablename_ = 'donees'
+    __table_args_ = {'shema': schema_name}
 
-    id_donee = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    id_donee = db.Column(db.Integer, primary_key=True, auto_increment = True)
     first_name = db.Column(db.String(50), nullable = False)
     last_name = db.Column(db.String(50), nullable = False)
-    credentials = db.Column(AccessCredentials, nullable = False)
     address = db.Column(Address, nullable = False)
+    email = db.Column(db.String(50), nullable = False)
+    password = db.Column(db.String(50), nullable = False)
     phone_number = db.Column(db.String(10), nullable = False)
 
-    def __init__(self, first_name, last_name, email, password, state, locality, distrit, phone_number):
+    def __init__(self, first_name, last_name, email, password, phone_number, address=None):
         self.first_name = first_name
         self.last_name = last_name
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.address = address
         self.phone_number = phone_number
-        self.address = {'state': state, 'locality': locality, 'distrit': distrit}
-        self.credentials = {'email': email, 'password': bcrypt.generate_password_hash(password).decode('utf-8')}
-        
-    def check_password(self, password):
-        return bcrypt.check_password_hash(self.credentials['password'].astext, password)
 
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+     
+    def set_address(self, address):
+        if isinstance(address, dict) and all(key in address for key in ["state", "locality", "distrit", "postal_code"]):
+            self.address = address
+        else:
+            raise ValueError("La dirección debe incluir los campos state, locality, distrit y postal_code")
+
+    def get_address(self):
+        return self.address 
+    
     def __repr__(self):
-        email = self.credentials['email'].astext
-        return f'<User {self.first_name}, {email}>'
+        return f'<User {self.nombre}>'
