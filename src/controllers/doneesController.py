@@ -6,22 +6,17 @@ from src.models.donee import Donee, db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 def createDonee(data):
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    email = data.get('email')
+    password = data.get('password')
+    phone_number = data.get('phone_number')
+    address = data.get('address')
+
     try:
-        print(data)
         # Obtener los datos
-        newDonee = Donee(
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            email=data['email'],
-            password=data['password'],
-            state=data['state'],
-            locality=data['locality'],
-            distrit=data['distrit'],
-            phone_number=data['phone_number']
-        )
-
-        print(newDonee)
-
+        newDonee = Donee(first_name, last_name, email, password, phone_number)
+        newDonee.set_address(address)
         # Inserción 
         db.session.add(newDonee)
         db.session.commit()
@@ -64,27 +59,16 @@ def updateDonee(id_donee, data):
             "details": str(e)
         }), 500
 
-def login(data):
+def login_usuario(data):
     email = data.get('email')
     password = data.get('password')
 
-    stmt = select(Donee)
+    donee = Donee.query.filter_by(email=email).first()
+    if not donee or not donee.check_password(password):
+        return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
-    # Ejecutar la consulta
-    result = db.session.execute(stmt).scalars().all()
-
-    # Imprimir los resultados
-    for donee in result:
-        print(donee)
-
-
-
-    # if not donee:
-    #     return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    # if not donee.check_password(password):
-    #     return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    # access_token = create_access_token(identity=donee.id)
-    return jsonify({"mensaje": "Inicio de sesión exitoso"}), 200
+    access_token = create_access_token(identity=donee.id_donee)
+    return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
 @jwt_required()
 def obtener_usuario():

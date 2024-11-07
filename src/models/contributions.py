@@ -4,7 +4,7 @@ from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.dialects.postgresql import ENUM
 import os
-db = SQLAlchemy()
+from . import db
 bcrypt = Bcrypt()
 load_dotenv()  
 

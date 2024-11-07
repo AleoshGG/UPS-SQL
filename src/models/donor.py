@@ -1,4 +1,5 @@
 # Importamos las dependencias
+from sqlalchemy import ForeignKey
 from src.models.donee import Donee
 from sqlalchemy.dialects.postgresql import ENUM
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ class Donor(Donee):
     __tablename__ = 'donors'
     __table_args__ = {'schema': schema_name}
 
-    id_donor = db.Column(db.Integer, primary_key=True, auto_increment= True)
+    id_donor = db.Column(db.Integer, ForeignKey(f'{schema_name}.donees.id_donee'), primary_key=True, autoincrement= True)
     health_status = db.Column(ENUM('good', 'recovery', name="health_status_enum"), nullable=False)
     availability = db.Column(ENUM('morning', 'afternoon', name="availability_enum"), nullable=False)
     blood_type = db.Column(ENUM(
@@ -22,12 +23,18 @@ class Donor(Donee):
     donations_number = db.Column(db.Integer, nullable = False)
     last_donation = db.Column(db.Date, nullable = False)
 
-    def __init__(self, first_name, last_name, email, password, phone_number, health_status, availability, donations_number, last_donation, address=None):
-        super.__init__(first_name, last_name, email, password, phone_number, address)
+    def __init__(self, first_name, last_name, email, password, phone_number, health_status, availability, donations_number, blood_type, last_donation, address=None):
+        super().__init__(first_name, last_name, email, password, phone_number, address)
         self.health_status = health_status
         self.availability = availability
         self.donations_number = donations_number
         self.last_donation = last_donation
+        self.blood_type = blood_type
+        print(self.health_status, self.availability, self.donations_number, self.blood_type, self.last_donation)
+
+    def set_direc(self, address):
+        print(address)
+        Donee.set_address(address)
 
     def __repr__(self):
         return f'<User {self.id_donor}>'

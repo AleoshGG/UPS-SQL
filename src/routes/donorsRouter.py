@@ -1,25 +1,25 @@
 from flask import Blueprint, request
-from src.controllers.doneesController import createDonee, updateDonee, login_usuario
+from src.controllers.donorsController import createDonor, login_usuario
 from flask_jwt_extended import JWTManager
 
-doneesBlueprint = Blueprint('donees', __name__)
+donorsBlueprint = Blueprint('donors', __name__)
 
-@doneesBlueprint.route('/add', methods=['POST'])
-def addDonee():
+@donorsBlueprint.route('/add', methods=['POST'])
+def addDonor():
     data = request.get_json()
-    return createDonee(data)
+    return createDonor(data)
 
-@doneesBlueprint.route('/update/<int:id_donee>', methods=['PUT'])
-def putDonee(id_donee):
-    data = request.get_json()
-    return updateDonee(id_donee, data)
+# @donorsBlueprint.route('/update/<int:id_donee>', methods=['PUT'])
+# def putDonee(id_donee):
+#     data = request.get_json()
+#     return (id_donee, data)
 
 # @usuario_blueprint.route('/users_base', methods=['POST'])
 # def crear_usuario_base_ruta():
 #     data = request.get_json()
 #     return crear_usuario_base(data)
 
-@doneesBlueprint.route('/login', methods=['POST'])
+@donorsBlueprint.route('/login', methods=['POST'])
 def login_ruta():
     data = request.get_json()
     return login_usuario(data)
