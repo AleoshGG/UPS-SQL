@@ -20,7 +20,7 @@ class Profile(db.Model):
     availability = db.Column(ENUM('morning', 'afternoon', name="availability_enum"), nullable=False)
     blood_type = db.Column(ENUM(
         'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-',
-        name="blood_type_enum"), nullable=False, unique=True)
+        name="blood_type_enum"), nullable=False)
     donations_number = db.Column(db.Integer, nullable=False)
     last_donation = db.Column(db.Date, nullable=False)
 
