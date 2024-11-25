@@ -14,7 +14,7 @@ from flask_cors import CORS
 def create_app():
     app = Flask(__name__)
 
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": ["https://unidosporlasangre.integrador.xyz", "http://localhost:4200"]}})
 
     app.config.from_object(config['development'])
     
